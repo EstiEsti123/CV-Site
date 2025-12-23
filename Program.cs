@@ -1,16 +1,32 @@
 using CV_SITE.Services;
 using CV_SITE.Models;
+using Microsoft.Extensions.Caching.Memory;
 
 var builder = WebApplication.CreateBuilder(args);
+// 1. הוספת ה-Cache למערכת
+builder.Services.AddMemoryCache();
 
+// 2. רישום ה-HttpClient עבור GitHubService בצורה הנכונה
+// השורה הזו היא הקריטית - היא אומרת לשרת איך להזריק HttpClient לתוך GitHubService
+builder.Services.AddHttpClient<GitHubService>();
+
+// 3. רישום הדקורייטור
+builder.Services.AddScoped<IGitHubService>(provider => 
+{
+    // כאן אנחנו מושכים את ה-GitHubService שכבר רשמנו למעלה עם ה-HttpClient שלו
+    var githubService = provider.GetRequiredService<GitHubService>();
+    var memoryCache = provider.GetRequiredService<IMemoryCache>();
+    
+    return new CachedGitHubService(githubService, memoryCache);
+});
 // --- רישום שירותים (DI Container) ---
 
 // הוספת תמיכה בקונטרולרים - קריטי למניעת שגיאת 404
 builder.Services.AddControllers(); 
 
 // חיבור ה-Interface למימוש של ה-Service שלנו
-builder.Services.AddHttpClient<IGitHubService, GitHubService>();
-builder.Services.AddScoped<IGitHubService, GitHubService>();
+// builder.Services.AddHttpClient<IGitHubService, GitHubService>();
+// builder.Services.AddScoped<IGitHubService, GitHubService>();
 
 // השורות הבאות מושבתות (במצב הערה) כדי למנוע שגיאות קומפילציה אם לא מותקן Swashbuckle
 // builder.Services.AddEndpointsApiExplorer();

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -39,4 +39,225 @@
             });
     </script>
 </body>
-</html>
+</html> -->
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>מערכת גיטהאב - הפורטפוליו שלי</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f9; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .tabs { margin-bottom: 20px; }
+        .tab-btn { padding: 10px 20px; cursor: pointer; border: none; background: #ddd; margin: 0 5px; border-radius: 5px; font-weight: bold; }
+        .tab-btn.active { background: #007bff; color: white; }
+        
+        .search-area { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 20px; width: 100%; max-width: 1000px; display: none; text-align: center; }
+        .search-area input { padding: 8px; margin: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; width: 100%; max-width: 1000px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 5px solid #007bff; }
+        .card h3 { margin-top: 0; color: #333; height: 50px; overflow: hidden; }
+        .info { font-size: 0.9em; color: #666; margin-bottom: 10px; }
+        .btn { display: inline-block; padding: 8px 12px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+        .btn-search { background: #28a745; color: white; border: none; padding: 9px 15px; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <h1>ניהול פרויקטים GitHub</h1>
+
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('portfolio')">הפורטפוליו שלי</button>
+        <button class="tab-btn" onclick="switchTab('search')">חיפוש פרויקטים</button>
+    </div>
+
+    <div id="search-inputs" class="search-area">
+        <input type="text" id="termInput" placeholder="שם פרויקט...">
+        <input type="text" id="langInput" placeholder="שפת פיתוח...">
+        <input type="text" id="userInput" placeholder="שם משתמש...">
+        <button class="btn-search" onclick="searchRepos()">חפש עכשיו</button>
+    </div>
+
+    <h2 id="view-title">הפרויקטים שלי</h2>
+
+    <div id="portfolio-selector" style="background: #f9f9f9; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; display: flex; gap: 10px; align-items: center;">
+        <span style="font-weight: bold;">הצגת משתמש:</span>
+        <input type="text" id="portfolioUser" placeholder="שם משתמש..." value="EstiEsti123" 
+               style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; flex-grow: 1; max-width: 200px;">
+        <button onclick="updatePortfolioView()" class="tab-btn active" style="padding: 8px 15px; font-size: 14px;">החלף תצוגה</button>
+    </div>
+
+    <div id="projects" class="grid">טוען נתונים...</div>
+
+ <script>
+    // 1. וודאי שהפורט כאן (5104) זהה למה שמופיע אצלך בהרצה
+    // const API_URL = 'http://localhost:5104/api/github';
+    // const container = document.getElementById('projects');
+
+    // window.onload = () => loadPortfolio();
+
+    // function switchTab(tab) {
+    //     const btns = document.querySelectorAll('.tab-btn');
+    //     btns.forEach(b => b.classList.remove('active'));
+        
+    //     if (tab === 'portfolio') {
+    //         btns[0].classList.add('active');
+    //         document.getElementById('search-inputs').style.display = 'none';
+    //         document.getElementById('view-title').innerText = 'הפרויקטים שלי';
+    //         loadPortfolio();
+    //     } else {
+    //         btns[1].classList.add('active');
+    //         document.getElementById('search-inputs').style.display = 'block';
+    //         document.getElementById('view-title').innerText = 'תוצאות חיפוש גלובלי';
+    //         container.innerHTML = 'הזינו נתונים ולחצו על חיפוש...';
+    //     }
+    // }
+
+    // async function loadPortfolio() {
+    //     container.innerHTML = 'טוען פורטפוליו...';
+    //     try {
+    //         const response = await fetch(`${API_URL}/portfolio/EstiEsti123`);
+    //         const data = await response.json();
+    //         renderCards(data);
+    //     } catch (err) {
+    //         console.error(err);
+    //         container.innerHTML = 'שגיאה בטעינת הפורטפוליו. ודאי שהשרת רץ.';
+    //     }
+    // }
+
+    // async function searchRepos() {
+    //     const term = document.getElementById('termInput').value;
+    //     const lang = document.getElementById('langInput').value;
+    //     const user = document.getElementById('userInput').value;
+
+    //     container.innerHTML = 'מחפש ב-GitHub...';
+        
+    //     try {
+    //         // בניית ה-URL עם הפרמטרים
+    //         const url = `${API_URL}/search?term=${encodeURIComponent(term)}&language=${encodeURIComponent(lang)}&user=${encodeURIComponent(user)}`;
+    //         const response = await fetch(url);
+    //         const data = await response.json();
+    //         renderCards(data);
+    //     } catch (err) {
+    //         console.error(err);
+    //         container.innerHTML = 'שגיאה בביצוע החיפוש.';
+    //     }
+    // }
+
+    // function renderCards(data) {
+    //     container.innerHTML = '';
+    //     if (!data || data.length === 0) {
+    //         container.innerHTML = 'לא נמצאו פרויקטים.';
+    //         return;
+    //     }
+
+    //     data.forEach(repo => {
+    //         // שימי לב לשמות השדות - הם חייבים להיות בדיוק כמו ב-JSON שראינו קודם
+    //         container.innerHTML += `
+    //             <div class="card">
+    //                 <h3>${repo.name || 'ללא שם'}</h3>
+    //                 <div class="info">שפה: ${repo.language || 'לא צוין'}</div>
+    //                 <div class="info">⭐ כוכבים: ${repo.starsCount || 0}</div>
+    //                 <div class="info">🔄 Pull Requests: ${repo.pullRequestsCount || 0}</div>
+    //                 <a href="${repo.repoUrl}" target="_blank" class="btn">צפה בגיטהאב</a>
+    //             </div>
+    //         `;
+    //     });
+    // }
+
+    // 1. וודאי שהפורט כאן (5104) זהה למה שמופיע אצלך בהרצה
+    const API_URL = 'http://localhost:5104/api/github';
+    const container = document.getElementById('projects');
+
+    // טעינה ראשונית של הפורטפוליו שלך ברגע שהדף עולה
+    window.onload = () => loadPortfolio();
+
+    // פונקציה למעבר בין לשונית הפורטפוליו ללשונית החיפוש
+    function switchTab(tab) {
+        const btns = document.querySelectorAll('.tab-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        
+        if (tab === 'portfolio') {
+            btns[0].classList.add('active');
+            document.getElementById('search-inputs').style.display = 'none';
+            document.getElementById('portfolio-selector').style.display = 'block';
+            document.getElementById('view-title').innerText = 'הפרויקטים שלי';
+            loadPortfolio();
+        } else {
+            btns[1].classList.add('active');
+            document.getElementById('search-inputs').style.display = 'block';
+            document.getElementById('portfolio-selector').style.display = 'none';
+            document.getElementById('view-title').innerText = 'תוצאות חיפוש גלובלי';
+            container.innerHTML = 'הזינו נתונים ולחצו על חיפוש...';
+        }
+    }
+
+    // פונקציה לעדכון הפורטפוליו לפי השם שהוזן בתיבה
+    function updatePortfolioView() {
+        const newUser = document.getElementById('portfolioUser').value;
+        if (newUser) {
+            loadPortfolio(newUser);
+        }
+    }
+
+    // הפונקציה המרכזית לטעינת פורטפוליו (משתמשת ב-Cache של השרת)
+    async function loadPortfolio(username = 'EstiEsti123') {
+        container.innerHTML = `<div class="info">טוען פורטפוליו של ${username}...</div>`;
+        try {
+            // קריאה ל-API החדש שבנינו ב-C#
+            const response = await fetch(`${API_URL}/portfolio/${encodeURIComponent(username)}`);
+            
+            if (!response.ok) throw new Error("User not found");
+            
+            const data = await response.json();
+            renderCards(data);
+            
+            // עדכון הכותרת למשתמש שנבחר
+            document.getElementById('view-title').innerText = 'הפרויקטים של ' + username;
+        } catch (err) {
+            console.error(err);
+            container.innerHTML = '<p style="color:red; padding: 20px;">שגיאה: לא ניתן למצוא את המשתמש או שהשרת כבוי.</p>';
+        }
+    }
+
+    // פונקציה לחיפוש חופשי ב-GitHub
+    async function searchRepos() {
+        const term = document.getElementById('termInput').value;
+        const lang = document.getElementById('langInput').value;
+        const user = document.getElementById('userInput').value;
+
+        container.innerHTML = '<div class="info">מחפש ב-GitHub...</div>';
+        
+        try {
+            const url = `${API_URL}/search?term=${encodeURIComponent(term)}&language=${encodeURIComponent(lang)}&user=${encodeURIComponent(user)}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            renderCards(data);
+        } catch (err) {
+            console.error(err);
+            container.innerHTML = '<p style="color:red; padding: 20px;">שגיאה בביצוע החיפוש.</p>';
+        }
+    }
+
+    // פונקציה שמייצרת את כרטיסיות העיצוב (Shared UI)
+    function renderCards(data) {
+        container.innerHTML = '';
+        if (!data || data.length === 0) {
+            container.innerHTML = '<p style="padding: 20px;">לא נמצאו פרויקטים.</p>';
+            return;
+        }
+
+        data.forEach(repo => {
+            container.innerHTML += `
+                <div class="card">
+                    <h3>${repo.name || 'ללא שם'}</h3>
+                    <div class="info"><strong>שפה:</strong> ${repo.language || 'לא צוין'}</div>
+                    <div class="info">⭐ <strong>כוכבים:</strong> ${repo.starsCount || 0}</div>
+                    <div class="info">🔄 <strong>Pull Requests:</strong> ${repo.pullRequestsCount || 0}</div>
+                    <a href="${repo.repoUrl}" target="_blank" class="btn">צפה בגיטהאב</a>
+                </div>
+            `;
+        });
+    }
+
+</script>

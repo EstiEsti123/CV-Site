@@ -50,25 +50,71 @@ namespace CV_SITE.Services
             return portfolio;
         }
 
+        // public async Task<List<RepositoryDto>> SearchRepositoriesAsync(string? term, string? language, string? user)
+        // {
+        //     var query = "search/repositories?q=";
+        //     if (!string.IsNullOrEmpty(term)) query += term;
+        //     if (!string.IsNullOrEmpty(language)) query += $"+language:{language}";
+        //     if (!string.IsNullOrEmpty(user)) query += $"+user:{user}";
+
+        //     var response = await _httpClient.GetAsync(query);
+        //     response.EnsureSuccessStatusCode();
+        //     var searchResult = await response.Content.ReadFromJsonAsync<JsonElement>();
+        //     var items = searchResult.GetProperty("items").EnumerateArray();
+
+        //     var results = new List<RepositoryDto>();
+        //     foreach (var item in items)
+        //     {
+        //         results.Add(MapToDto(item, 0)); 
+        //     }
+        //     return results;
+        // }
         public async Task<List<RepositoryDto>> SearchRepositoriesAsync(string? term, string? language, string? user)
-        {
-            var query = "search/repositories?q=";
-            if (!string.IsNullOrEmpty(term)) query += term;
-            if (!string.IsNullOrEmpty(language)) query += $"+language:{language}";
-            if (!string.IsNullOrEmpty(user)) query += $"+user:{user}";
+{
+    // 1. בניית מחרוזת השאילתה (Query)
+    // ה-API של GitHub מצפה לפורמט: q=term+language:csharp+user:microsoft
+    var queryParts = new List<string>();
 
-            var response = await _httpClient.GetAsync(query);
-            response.EnsureSuccessStatusCode();
-            var searchResult = await response.Content.ReadFromJsonAsync<JsonElement>();
-            var items = searchResult.GetProperty("items").EnumerateArray();
+    if (!string.IsNullOrEmpty(term)) 
+        queryParts.Add(term);
+    
+    if (!string.IsNullOrEmpty(language)) 
+        queryParts.Add($"language:{language}");
+    
+    if (!string.IsNullOrEmpty(user)) 
+        queryParts.Add($"user:{user}");
 
-            var results = new List<RepositoryDto>();
-            foreach (var item in items)
-            {
-                results.Add(MapToDto(item, 0)); 
-            }
-            return results;
-        }
+    // אם לא נשלח שום פרמטר, נחפש פרויקטים פופולריים כברירת מחדל כדי לא לקבל שגיאה
+    string queryString = queryParts.Count > 0 ? string.Join("+", queryParts) : "is:public";
+
+    // 2. שליחת הבקשה
+    var response = await _httpClient.GetAsync($"search/repositories?q={queryString}");
+    
+    if (!response.IsSuccessStatusCode)
+    {
+        // במקרה של שגיאה (כמו חריגה ממכסת הבקשות), נחזיר רשימה ריקה
+        return new List<RepositoryDto>();
+    }
+
+    // 3. קריאת התוצאות
+    var searchResult = await response.Content.ReadFromJsonAsync<JsonElement>();
+    
+    // ה-API מחזיר אובייקט עם שדה בשם "items" שמכיל את רשימת הרפוזיטורים
+    if (!searchResult.TryGetProperty("items", out var items))
+    {
+        return new List<RepositoryDto>();
+    }
+
+    var results = new List<RepositoryDto>();
+    foreach (var item in items.EnumerateArray())
+    {
+        // שימוש בפונקציית ה-MapToDto הקיימת שלך כדי להפוך JSON לאובייקט C#
+        // שלחנו 0 כמות Pull Requests כי בחיפוש כללי הנתון הזה לא מגיע בברירת מחדל
+        results.Add(MapToDto(item, 0)); 
+    }
+
+    return results;
+}
 
         private async Task<int> GetPullRequestsCount(string owner, string repoName)
         {
