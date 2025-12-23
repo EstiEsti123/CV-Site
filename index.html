@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>הפורטפוליו שלי</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f9; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; width: 100%; max-width: 1000px; }
+        .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); border-top: 5px solid #007bff; }
+        .card h3 { margin-top: 0; color: #333; }
+        .info { font-size: 0.9em; color: #666; margin-bottom: 10px; }
+        .btn { display: inline-block; padding: 8px 12px; background: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>הפרויקטים שלי מ-GitHub</h1>
+    <div id="projects" class="grid">טוען נתונים...</div>
+
+    <script>
+        // פנייה ל-API שבנית ב-C#
+        fetch('http://localhost:5104/api/github/portfolio/EstiEsti123')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('projects');
+                container.innerHTML = ''; // ניקוי הודעת הטעינה
+                
+                data.forEach(repo => {
+                    container.innerHTML += `
+                        <div class="card">
+                            <h3>${repo.name}</h3>
+                            <div class="info">שפה: ${repo.language}</div>
+                            <div class="info">⭐ כוכבים: ${repo.starsCount}</div>
+                            <div class="info">🔄 Pull Requests: ${repo.pullRequestsCount}</div>
+                            <a href="${repo.repoUrl}" target="_blank" class="btn">צפה בגיטהאב</a>
+                        </div>
+                    `;
+                });
+            });
+    </script>
+</body>
+</html>

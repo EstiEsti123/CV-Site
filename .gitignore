@@ -1,0 +1,22 @@
+# תיקיות בנייה והרצה (חובה להתעלם)
+bin/
+obj/
+
+# קבצי הגדרות משתמש של Visual Studio
+.vs/
+*.user
+*.userosscache
+*.sln.docstates
+
+# קבצי הגדרות של VS Code
+.vscode/
+
+# קבצי לוג
+*.log
+
+# קבצי הגדרות מקומיים שעשויים להכיל סודות
+appsettings.Development.json
+
+# תיקיות של חבילות (Packages)
+[Tt]est[Rr]esults/
+nupkg/
